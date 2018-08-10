@@ -21,7 +21,7 @@ export class State extends EnumType<State>() {
 console.log("" + State.ACTIVE);        // Active
 console.log("" + State.BLOCKED);       // Blocked
 console.log(State.values());           // [State.NEW, State.ACTIVE, State.BLOCKED]
-console.log(State.valueOf("Новый"));   // State.NEW
+console.log(State.valueOf("New"));     // State.NEW
 console.log(State.valueByName("NEW")); // State.NEW
 console.log(State.ACTIVE.enumName);    // ACTIVE
 ```
