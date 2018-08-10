@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outFile": "./target/jenum.js",
+    "module": "amd",
+    "target": "es5",
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+    "noResolve": true,
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "include" : [
+    "./src/ts"
+  ]
+}

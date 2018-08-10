@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "outFile": "./target/example.js"
+  },
+  "include" : [
+    "./src/ts",
+    "./src/example"
+  ]
+}
