@@ -3,7 +3,7 @@ TypeScript Enum like java.lang.Enum
 
 See example
 ```typescript
-import {Enum, EnumType, IStaticEnum} from "jenum";
+import {Enum, EnumType, IStaticEnum} from "ts-jenum";
 
 @Enum("text")
 export class State extends EnumType<State>() {
