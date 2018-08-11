@@ -1,39 +1,36 @@
 /**
- * Декоратор автоматической инициализации перечисления.
- * TODO: После реализации запроса https://github.com/Microsoft/TypeScript/issues/4881 можно будет сделать так,
- * TODO: что для создания перечисления будет достаточно указать этот декоратор без наследования от Enumerable.
- * @param {string} idProperty название свойства в элементах перечисления, которое нужно использовать как идентификатор
- * @return конструктор перечисления
- * @constructor
+ * Decorator for Enum.
+ * @param {string} idProperty - property name to find enum value by property value. Usage in valueOf method
+ * @return constructor of enum type
  */
 export function Enum(idProperty?: string) {
     // tslint:disable-next-line
     return function <T extends Function, V>(target: T): T {
         if ((target as any).__enumMap__ || (target as any).__enumValues__) {
             const enumName = (target as any).prototype.constructor.name;
-            throw new Error(`Перечисление ${enumName} уже инициализировано`);
+            throw new Error(`The enumeration ${enumName} has already initialized`);
         }
         const enumMap: any = {};
         const enumMapByName: any = {};
         const enumValues = [];
-        // Перебор всех статических свойств класса
+        // Lookup static fields
         for (const key of Object.keys(target)) {
             const value: any = (target as any)[key];
-            // Если значением свойства является экземпляр класса, то это значение является одним из элементов перечисления
+            // Check static field: to be instance of enum type
             if (value instanceof target) {
                 let id;
                 if (idProperty) {
                     id = (value as any)[idProperty];
                     if (typeof id !== "string" && typeof id !== "number") {
                         const enumName = (target as any).prototype.constructor.name;
-                        throw new Error(`Значение свойства ${idProperty} в элементе перечисления ${enumName}. ${key} не является строкой или числом: ${id}`);
+                        throw new Error(`The value of the ${idProperty} property in the enumeration element ${enumName}. ${key} is not a string or a number: ${id}`);
                     }
                 } else {
                     id = key;
                 }
                 if (enumMap[id]) {
                     const enumName = (target as any).prototype.constructor.name;
-                    throw new Error(`В перечислении ${enumName} уже существует элемент с идентификатором ${id}: ${enumName}.${enumMap[id].__enumName__}`);
+                    throw new Error(`An element with the identifier ${id}: ${enumName}.${enumMap[id].enumName} already exists in the enumeration ${enumName}`);
                 }
                 enumMap[id] = value;
                 enumMapByName[key] = value;
@@ -55,7 +52,7 @@ export function Enum(idProperty?: string) {
     };
 }
 
-/** Тип для мета-данных Enum */
+/** Type for Meta-Data of Enum */
 type EnumStore = {
     name: string,
     __enumMap__: any,
@@ -64,7 +61,7 @@ type EnumStore = {
     __idPropertyName__?: string
 };
 
-/** Интерфейс типа перечисления. Нужен для корректного определения типов элементов перечисления */
+/** Interface for IDE: autocomplete syntax and keywords */
 export interface IStaticEnum<T> {
 
     new(): {enumName: string};
@@ -76,75 +73,68 @@ export interface IStaticEnum<T> {
     valueByName(name: string): T;
 }
 
-/** Базовый класс для создания перечисления */
+/** Base class for enum type */
 class Enumerable {
 
-    /** Создает элемент перечисления */
     constructor() {
         const clazz = this.constructor as any as EnumStore;
         if (clazz.__enumMap__ || clazz.__enumValues__ || clazz.__enumMapByName__) {
-            throw new Error(`Запрещено создавать элементы перечисления ${clazz.name} вне самого перечисления`);
+            throw new Error(`It is forbidden to create ${clazz.name} enumeration elements outside the enumeration`);
         }
     }
 
     /**
-     * Возвращает все элементы перечисления.
-     * Параметр this нужен для корректного определения типов элементов перечисления.
-     * @return {ReadonlyArray<T>} все элементы перечисления
+     * Get all elements of enum
+     * @return {ReadonlyArray<T>} all elements of enum
      */
     static values(): ReadonlyArray<any> {
         const clazz = this as any as EnumStore;
         if (!clazz.__enumValues__) {
-            throw new Error(`Перечисление ${clazz.name} не инициализировано. Необходимо добавить к классу декоратор @Enum`);
+            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
         }
         return clazz.__enumValues__;
     }
 
     /**
-     * Возвращает элемент перечисления по его идентификатору.
-     * Если при инициализации было указан параметр idProperty, то использует его, иначе - название элемента в перечислении.
-     * Кидает ошибку если в перечислении нет элемента с указанным идентификатором.
-     * Параметр this нужен для корректного определения типов элементов перечисления.
-     * @param {string | number} id идентификатор элемента
-     * @return {T} элемент перечисления с указанным идентификатором
+     * Lookup enum item by id
+     * @param {string | number} id - value for lookup
+     * @return enum item by id
      */
     static valueOf(id: string | number): any {
         const clazz = this as any as EnumStore;
         if (!clazz.__enumMap__) {
-            throw new Error(`Перечисление ${clazz.name} не инициализировано. Необходимо добавить к классу декоратор @Enum`);
+            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
         }
         const value = clazz.__enumMap__[id];
         if (!value) {
-            throw new Error(`В перечислении ${clazz.name} не существует элемента с идентификатором ${id}`);
+            throw new Error(`The element with ${id} identifier does not exist in the $ {clazz.name} enumeration`);
         }
         return value;
     }
 
     /**
-     * Возвращает элемент перечисления по его наименованию.
-     * Кидает ошибку если в перечислении нет элемента с указанным наименованием.
-     * Параметр this нужен для корректного определения типов элементов перечисления.
-     * @param {string} name наименование элемента в перечислении
-     * @return {T} элемент перечисления с указанным наименованием
+     * Lookup enum item by enum name
+     * @param {string} name - enum name
+     * @return item by enum name
      */
     static valueByName(name: string): any {
         const clazz = this as any as EnumStore;
         if (!clazz.__enumMapByName__) {
-            throw new Error(`Перечисление ${clazz.name} не инициализировано. Необходимо добавить к классу декоратор @Enum`);
+            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
         }
         const value = clazz.__enumMapByName__[name];
         if (!value) {
-            throw new Error(`В перечислении ${clazz.name} не существует элемента с наименованием ${name}`);
+            throw new Error(`The element with ${name} name does not exist in the ${clazz.name} enumeration`);
         }
         return value;
     }
 
-    /** Возвращает наименование элемента в перечислении */
+    /** Get enum name */
     get enumName(): string {
         return (this as any).__enumName__;
     }
 
-    /** Возвращает строковое значение элемента перечисления */
+    /** Get enum id value or enum name */
     toString(): string {
         const clazz = this.constructor as any as EnumStore;
         if (clazz.__idPropertyName__) {
@@ -155,6 +145,7 @@ class Enumerable {
     }
 }
 
+/** 'Casting' method to make correct Enum Type */
 export function EnumType<T>(): IStaticEnum<T> {
     return (<IStaticEnum<T>> Enumerable);
 }
