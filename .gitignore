@@ -4,6 +4,10 @@
 .settings
 target/
 
+node_modules/
+dist/
+ts-jenum-*.tgz
+
 # idea
 .idea
 *.iml
