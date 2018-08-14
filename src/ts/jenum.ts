@@ -1,68 +1,74 @@
 /**
  * Decorator for Enum.
- * @param {string} idProperty - property name to find enum value by property value. Usage in valueOf method
+ * @param {string} idPropertyName - property name to find enum value by property value. Usage in valueOf method
  * @return constructor of enum type
  */
-export function Enum(idProperty?: string) {
+export function Enum(idPropertyName?: string) {
     // tslint:disable-next-line
-    return function <T extends Function, V>(target: T): T {
-        if ((target as any).__enumMap__ || (target as any).__enumValues__) {
-            const enumName = (target as any).prototype.constructor.name;
-            throw new Error(`The enumeration ${enumName} has already initialized`);
-        }
-        const enumMap: any = {};
-        const enumMapByName: any = {};
-        const enumValues = [];
+    return function <T extends (Function & EnumClass), V>(target: T): T {
+        const store: EnumStore = {
+            name: target.prototype.constructor.name,
+            enumMap: {},
+            enumMapByName: {},
+            enumValues: [],
+            idPropertyName: idPropertyName
+        };
         // Lookup static fields
-        for (const key of Object.keys(target)) {
-            const value: any = (target as any)[key];
+        for (const fieldName of Object.keys(target)) {
+            const value: any = (target as any)[fieldName];
             // Check static field: to be instance of enum type
             if (value instanceof target) {
-                let id;
-                if (idProperty) {
-                    id = (value as any)[idProperty];
+                const enumItem: Enumerable = value;
+                let id = fieldName;
+                if (idPropertyName) {
+                    id = (value as any)[idPropertyName];
                     if (typeof id !== "string" && typeof id !== "number") {
-                        const enumName = (target as any).prototype.constructor.name;
-                        throw new Error(`The value of the ${idProperty} property in the enumeration element ${enumName}. ${key} is not a string or a number: ${id}`);
+                        const enumName = store.name;
+                        throw new Error(`The value of the ${idPropertyName} property in the enumeration element ${enumName}.${fieldName} is not a string or a number: ${id}`);
                     }
-                } else {
-                    id = key;
                 }
-                if (enumMap[id]) {
-                    const enumName = (target as any).prototype.constructor.name;
-                    throw new Error(`An element with the identifier ${id}: ${enumName}.${enumMap[id].enumName} already exists in the enumeration ${enumName}`);
+                if (store.enumMap[id]) {
+                    const enumName = store.name;
+                    throw new Error(`An element with the identifier ${id}: ${enumName}.${store.enumMap[id].enumName} already exists in the enumeration ${enumName}`);
                 }
-                enumMap[id] = value;
-                enumMapByName[key] = value;
-                enumValues.push(value);
-                Object.defineProperty(value, "__enumName__", {value: key});
-                Object.freeze(value);
+                store.enumMap[id] = enumItem;
+                store.enumMapByName[fieldName] = enumItem;
+                store.enumValues.push(enumItem);
+                enumItem.__enumName__ = fieldName;
+                Object.freeze(enumItem);
             }
         }
-        Object.freeze(enumMap);
-        Object.freeze(enumValues);
-        Object.defineProperty(target, "__enumMap__", {value: enumMap});
-        Object.defineProperty(target, "__enumMapByName__", {value: enumMapByName});
-        Object.defineProperty(target, "__enumValues__", {value: enumValues});
-        if (idProperty) {
-            Object.defineProperty(target, "__idPropertyName__", {value: idProperty});
-        }
+        target.__store__ = store;
+        Object.freeze(target.__store__);
         Object.freeze(target);
         return target;
     };
 }
 
+/** Key->Value type */
+export type EnumMap = {[key: string]: Enumerable};
+
 /** Type for Meta-Data of Enum */
-type EnumStore = {
+export type EnumClass = {
+    __store__: EnumStore
+};
+
+/** Store Type. Keep meta data for enum */
+export type EnumStore = {
     name: string,
-    __enumMap__: any,
-    __enumMapByName__: {[key: string]: any},
-    __enumValues__: ReadonlyArray<any>,
-    __idPropertyName__?: string
+    enumMap: EnumMap,
+    enumMapByName: EnumMap,
+    enumValues: Enumerable[],
+    idPropertyName?: string
+};
+
+/** Enum Item Type */
+export type EnumItemType = {
+    __enumName__: string;
 };
 
 /** Interface for IDE: autocomplete syntax and keywords */
-export interface IStaticEnum<T> {
+export interface IStaticEnum<T> extends EnumClass {
 
     new(): {enumName: string};
 
@@ -74,13 +80,15 @@ export interface IStaticEnum<T> {
 }
 
 /** Base class for enum type */
-class Enumerable {
+export class Enumerable implements EnumItemType {
+    // tslint:disable:variable-name
+    // stub. need for type safety
+    static readonly __store__ = {} as EnumStore;
+    // Initialize inside @Enum decorator
+    __enumName__ = "";
+    // tslint:enable:variable-name
 
     constructor() {
-        const clazz = this.constructor as any as EnumStore;
-        if (clazz.__enumMap__ || clazz.__enumValues__ || clazz.__enumMapByName__) {
-            throw new Error(`It is forbidden to create ${clazz.name} enumeration elements outside the enumeration`);
-        }
     }
 
     /**
@@ -88,11 +96,7 @@ class Enumerable {
      * @return {ReadonlyArray<T>} all elements of enum
      */
     static values(): ReadonlyArray<any> {
-        const clazz = this as any as EnumStore;
-        if (!clazz.__enumValues__) {
-            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
-        }
-        return clazz.__enumValues__;
+        return this.__store__.enumValues;
     }
 
     /**
@@ -101,11 +105,7 @@ class Enumerable {
      * @return enum item by id
      */
     static valueOf(id: string | number): any {
-        const clazz = this as any as EnumStore;
-        if (!clazz.__enumMap__) {
-            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
-        }
-        const value = clazz.__enumMap__[id];
+        const value = this.__store__.enumMap[id];
         if (!value) {
             throw new Error(`The element with ${id} identifier does not exist in the $ {clazz.name} enumeration`);
         }
@@ -118,30 +118,30 @@ class Enumerable {
      * @return item by enum name
      */
     static valueByName(name: string): any {
-        const clazz = this as any as EnumStore;
-        if (!clazz.__enumMapByName__) {
-            throw new Error(`${clazz.name} enumeration has not been initialized. It is necessary to add the decorator @Enum to the class`);
-        }
-        const value = clazz.__enumMapByName__[name];
+        const value = this.__store__.enumMapByName[name];
         if (!value) {
-            throw new Error(`The element with ${name} name does not exist in the ${clazz.name} enumeration`);
+            throw new Error(`The element with ${name} name does not exist in the ${this.__store__.name} enumeration`);
         }
         return value;
     }
 
     /** Get enum name */
     get enumName(): string {
-        return (this as any).__enumName__;
+        return this.__enumName__;
     }
 
     /** Get enum id value or enum name */
     toString(): string {
-        const clazz = this.constructor as any as EnumStore;
-        if (clazz.__idPropertyName__) {
+        const clazz = this.topClass;
+        if (clazz.__store__.idPropertyName) {
             const self = this as any;
-            return self[clazz.__idPropertyName__];
+            return self[clazz.__store__.idPropertyName];
         }
         return this.enumName;
+    }
+
+    private get topClass(): EnumClass {
+        return this.constructor as any;
     }
 }
 
