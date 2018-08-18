@@ -59,7 +59,7 @@ export type EnumStore = {
     enumMap: EnumMap,
     enumMapByName: EnumMap,
     enumValues: Enumerable[],
-    idPropertyName?: string
+    idPropertyName?: any
 };
 
 /** Enum Item Type */
