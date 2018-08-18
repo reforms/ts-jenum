@@ -8,11 +8,11 @@ import {Enum, EnumType, IStaticEnum} from "ts-jenum";
 @Enum("text")
 export class State extends EnumType<State>() {
 
-    static readonly NEW = new State("New");
-    static readonly ACTIVE = new State("Active");
-    static readonly BLOCKED = new State("Blocked");
+    static readonly NEW = new State(1, "New");
+    static readonly ACTIVE = new State(2, "Active");
+    static readonly BLOCKED = new State(3, "Blocked");
 
-    private constructor(public text: string) {
+    private constructor(public code: number, public text: string) {
         super();
     }
 }
@@ -24,4 +24,23 @@ console.log(State.values());           // [State.NEW, State.ACTIVE, State.BLOCKE
 console.log(State.valueOf("New"));     // State.NEW
 console.log(State.valueByName("NEW")); // State.NEW
 console.log(State.ACTIVE.enumName);    // ACTIVE
+```
+
+Details. Type safety. 
+In example above, you can write "tExt" or "txt" instead of "text" as @Enum decorator argument and no exception happen. In example below this problem is absent. Add an expression <State> to @Enum decorator
+
+```typescript
+import {Enum, EnumType, IStaticEnum} from "ts-jenum";
+
+@Enum<State>("text")
+export class State extends EnumType<State>() {
+
+    static readonly NEW = new State(1, "New");
+    static readonly ACTIVE = new State(2, "Active");
+    static readonly BLOCKED = new State(3, "Blocked");
+
+    private constructor(public code: number, public text: string) {
+        super();
+    }
+}
 ```

@@ -3,9 +3,9 @@
  * @param {string} idPropertyName - property name to find enum value by property value. Usage in valueOf method
  * @return constructor of enum type
  */
-export function Enum(idPropertyName?: string) {
+export function Enum<T = any>(idPropertyName?: keyof T) {
     // tslint:disable-next-line
-    return function <T extends (Function & EnumClass), V>(target: T): T {
+    return function <T extends (Function & EnumClass)>(target: T): T {
         const store: EnumStore = {
             name: target.prototype.constructor.name,
             enumMap: {},
@@ -148,4 +148,16 @@ export class Enumerable implements EnumItemType {
 /** 'Casting' method to make correct Enum Type */
 export function EnumType<T>(): IStaticEnum<T> {
     return (<IStaticEnum<T>> Enumerable);
+}
+
+@Enum<State>("text")
+export class State extends EnumType<State>() {
+
+    static readonly NEW = new State(1, "New");
+    static readonly ACTIVE = new State(2, "Active");
+    static readonly BLOCKED = new State(3, "Blocked");
+
+    private constructor(public code: number, public text: string) {
+        super();
+    }
 }
