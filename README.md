@@ -26,8 +26,8 @@ console.log(State.valueByName("NEW")); // State.NEW
 console.log(State.ACTIVE.enumName);    // ACTIVE
 ```
 
-Details. Type safety. 
-In example above, you can write "tExt" or "txt" instead of "text" as @Enum decorator argument and no exception happen. In example below this problem is absent. Add an expression <State> to @Enum decorator
+Details. Type safety.
+In example above, you can write "tExt" or "txt" instead of "text" as @Enum decorator argument and no exception happen. In example below this problem is absent. Add an expression &lt;State&gt; to @Enum decorator
 
 ```typescript
 import {Enum, EnumType, IStaticEnum} from "ts-jenum";
