@@ -14,10 +14,10 @@
         "dist",
         "src"
     ],
-    "main": "dist/commonjs/index.js",
-    "jsnext:main": "dist/es/index.js",
-    "module": "dist/es/index.js",
-    "types": "dist/types/index.d.ts",
+    "main": "dist/commonjs/jenum.js",
+    "jsnext:main": "dist/es/jenum.js",
+    "module": "dist/es/jenum.js",
+    "types": "dist/types/jenum.d.ts",
     "scripts": {
         "clean:dist": "rimraf dist",
         "clean:pack": "rimraf ts-enum-util-*.tgz",
