@@ -1,6 +1,6 @@
 {
     "name": "ts-jenum",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "description": "TypeScript Java Enum",
     "repository": {
         "type": "git",

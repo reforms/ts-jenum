@@ -3,7 +3,7 @@ TypeScript Enum like java.lang.Enum
 
 See example
 ```typescript
-import {Enum, EnumType, IStaticEnum} from "ts-jenum";
+import {Enum, EnumType} from "ts-jenum";
 
 @Enum("text")
 export class State extends EnumType<State>() {
@@ -30,7 +30,7 @@ Details. Type safety.
 In example above, you can write "tExt" or "txt" instead of "text" as @Enum decorator argument and no exception happen. In example below this problem is absent. Add an expression &lt;State&gt; to @Enum decorator
 
 ```typescript
-import {Enum, EnumType, IStaticEnum} from "ts-jenum";
+import {Enum, EnumConstNames, EnumType} from "ts-jenum";
 
 @Enum<State>("text")
 export class State extends EnumType<State>() {
@@ -43,4 +43,7 @@ export class State extends EnumType<State>() {
         super();
     }
 }
+// Get Enum Names
+// be "NEW" | "ACTIVE" | "BLOCKED"
+type StateNameUnion = EnumConstNames<typeof State, State>;
 ```

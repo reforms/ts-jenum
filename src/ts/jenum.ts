@@ -150,14 +150,13 @@ export function EnumType<T>(): IStaticEnum<T> {
     return (<IStaticEnum<T>> Enumerable);
 }
 
-@Enum<State>("text")
-export class State extends EnumType<State>() {
+/** Get Names Of Enums */
+export type EnumConstNames<T, P> = Exclude<GetNames<T, P>, "prototype">
 
-    static readonly NEW = new State(1, "New");
-    static readonly ACTIVE = new State(2, "Active");
-    static readonly BLOCKED = new State(3, "Blocked");
-
-    private constructor(public code: number, public text: string) {
-        super();
-    }
-}
+type GetNames<FromType, KeepType = any, Include = true> = {
+    [K in keyof FromType]: 
+        FromType[K] extends KeepType ? 
+            Include extends true ? K : 
+            never : Include extends true ? 
+            never : K
+}[keyof FromType];
