@@ -12,7 +12,7 @@ export class State extends EnumType<State>() {
     static readonly ACTIVE = new State(2, "Active");
     static readonly BLOCKED = new State(3, "Blocked");
 
-    private constructor(public code: number, public text: string) {
+    private constructor(readonly code: number, readonly text: string) {
         super();
     }
 }
@@ -39,7 +39,7 @@ export class State extends EnumType<State>() {
     static readonly ACTIVE = new State(2, "Active");
     static readonly BLOCKED = new State(3, "Blocked");
 
-    private constructor(public code: number, public text: string) {
+    private constructor(readonly code: number, readonly text: string) {
         super();
     }
 }
