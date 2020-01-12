@@ -19,8 +19,14 @@
     "emitDecoratorMetadata": true,
     "preserveConstEnums": true,
 
+    "skipLibCheck": true,
+
     /* Module Resolution Options */
     "moduleResolution": "node",           /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     "baseUrl": "./src/ts"                 /* Base directory to resolve non-absolute module names. */
-  }
+  },
+  "exclude": [
+    "./src/__tests__/jenum.test.ts",
+    "./node_modules"
+  ]
 }
