@@ -1,4 +1,4 @@
-import {Enum, EnumType} from "ts-jenum";
+import {Enum, EnumType} from "../ts/jenum";
 
 describe("EnumApi", () => {
 

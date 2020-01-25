@@ -151,7 +151,7 @@ export function EnumType<T>(): IStaticEnum<T> {
 }
 
 /** Get Names Of Enums */
-export type EnumConstNames<T, P> = Exclude<GetNames<T, P>, "prototype">
+export type EnumConstNames<T extends {prototype: K}, K = T["prototype"]> = Exclude<GetNames<T, K>, "prototype">;
 
 type GetNames<FromType, KeepType = any, Include = true> = {
     [K in keyof FromType]: 

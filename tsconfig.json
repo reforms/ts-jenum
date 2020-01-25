@@ -27,6 +27,7 @@
   },
   "exclude": [
     "./src/__tests__/jenum.test.ts",
+    "./src/example/*.ts",
     "./node_modules"
   ]
 }

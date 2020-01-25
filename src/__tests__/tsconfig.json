@@ -1,0 +1,14 @@
+/** Using by IDE */
+{
+  "compilerOptions": { 
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+
+    "skipLibCheck": true,
+  }
+}
