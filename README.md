@@ -22,8 +22,17 @@ console.log("" + State.ACTIVE);        // Active
 console.log("" + State.BLOCKED);       // Blocked
 console.log(State.values());           // [State.NEW, State.ACTIVE, State.BLOCKED]
 console.log(State.valueOf("New"));     // State.NEW
+State.valueOf("Unknown")               // throw Error(...)
 console.log(State.valueByName("NEW")); // State.NEW
 console.log(State.ACTIVE.enumName);    // ACTIVE
+
+const first = state => state.code === 1;
+console.log(State.find("New"));        // State.NEW
+console.log(State.find(first));        // State.NEW
+console.log(State.find("Unknown"));    // null
+const last = state => state.code === 3;
+console.log(State.filter(last))        // [State.BLOCKED]
+
 ```
 
 Details. Type safety.

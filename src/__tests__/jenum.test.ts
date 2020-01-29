@@ -1,4 +1,4 @@
-import {Enum, EnumType} from "../ts/jenum";
+import {Enum, EnumType, SearchPredicate} from "../ts/jenum";
 
 describe("EnumApi", () => {
 
@@ -28,6 +28,36 @@ describe("EnumApi", () => {
 
     test("valueByName$error", () => {
         expect(() => State.valueByName("Unknown")).toThrowError();
+    });
+
+    test("findByValue", () => {
+        expect(State.find("New")).toBe(State.NEW);
+        expect(State.find("Active")).toBe(State.ACTIVE);
+        expect(State.find("Blocked")).toBe(State.BLOCKED);
+        expect(State.find("Unknown")).toBeNull();
+    });
+
+    test("findByPredicate", () => {
+        expect(State.find(state => state.code === 1)).toBe(State.NEW);
+        expect(State.find(state => state.code === 2)).toBe(State.ACTIVE);
+        expect(State.find(state => state.code === 3)).toBe(State.BLOCKED);
+        expect(State.find(state => state.code === 4)).toBeNull();
+    });
+
+    test("filter", () => {
+        expect(State.filter(state => state.code === 1)[0]).toBe(State.NEW);
+        expect(State.filter(state => state.code === 2)[0]).toBe(State.ACTIVE);
+        expect(State.filter(state => state.code === 3)[0]).toBe(State.BLOCKED);
+        expect(State.filter(state => state.code === 4).length).toBe(0);
+        const checkFilter = (predicate:  SearchPredicate<State>, expectedStatew: State[]) => {
+            const actualStates = State.filter(predicate);
+            expect(actualStates.length).toBe(expectedStatew.length);
+            for (let index = 0; index < actualStates.length; index++) {
+                expect(actualStates[index]).toBe(expectedStatew[index]);
+            }
+        }
+        checkFilter(state => state.code > 1, [State.ACTIVE, State.BLOCKED]);
+        checkFilter(state => state.code !== 2, [State.NEW, State.BLOCKED]);    
     });
 
     test("enumName", () => {

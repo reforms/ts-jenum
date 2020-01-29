@@ -67,6 +67,8 @@ export type EnumItemType = {
     __enumName__: string;
 };
 
+export type SearchPredicate<T> = (value: T, index?: number, obj?: ReadonlyArray<T>) => boolean;
+
 /** Interface for IDE: autocomplete syntax and keywords */
 export interface IStaticEnum<T> extends EnumClass {
 
@@ -77,6 +79,10 @@ export interface IStaticEnum<T> extends EnumClass {
     valueOf(id: string | number): T;
 
     valueByName(name: string): T;
+
+    find(idOrPredicate: string | number | SearchPredicate<T>): T | null;
+
+    filter(predicate: SearchPredicate<T>): ReadonlyArray<T>;
 }
 
 /** Base class for enum type */
@@ -123,6 +129,17 @@ export class Enumerable implements EnumItemType {
             throw new Error(`The element with ${name} name does not exist in the ${this.__store__.name} enumeration`);
         }
         return value;
+    }
+
+    static find(idOrPredicate: string | number | SearchPredicate<any>): any | null {
+        if (typeof idOrPredicate === "number" || typeof idOrPredicate === "string") {
+            return this.__store__.enumMap[idOrPredicate] || null;
+        }
+        return this.values().find(idOrPredicate) || null;
+    }
+
+    static filter(predicate: SearchPredicate<any>): ReadonlyArray<any> {
+        return this.values().filter(predicate);
     }
 
     /** Get enum name */
