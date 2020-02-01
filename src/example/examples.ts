@@ -18,11 +18,23 @@ type StateNames = EnumConstNames<typeof State/*, State*/>;
 // to be: [State.NEW, State.ACTIVE, State.BLOCKED]
 const states = State.values();
 
+// to be: ["NEW", "ACTIVE", "BLOCKED"]
+const enumNames = State.keys();
+
 // to be: State.NEW
 const newState = State.valueByName("NEW")
 
 // to be: State.ACTIVE
 const activeState = State.valueOf("Active");
+
+// to be: State.BLOCKED
+const blockedState = State.find("Blocked");
+
+// to be: State.BLOCKED
+const blocedByCode3 = State.find(state => state.code === 3);
+
+// to be: [State.ACTIVE, State.BLOCKED]
+const someStates = State.filter(state => state.code >= 2);
 
 // to be: "Active"
 const activeText = State.ACTIVE.toString();
