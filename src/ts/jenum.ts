@@ -74,14 +74,42 @@ export interface IStaticEnum<T> extends EnumClass {
 
     new(): {enumName: string};
 
+    /** @returns all elements of enum */
     values(): ReadonlyArray<T>;
 
+    /** 
+     * Get all names of enum.
+     * It's shortcut for 'values().map(value => value.enumName)'
+     * @returns all names of enum */
+    keys(): T[];
+
+    /**
+     * Lookup enum item by id
+     * @param id value for lookup or throw error
+     * @throws enum item not found
+     */
     valueOf(id: string | number): T;
 
+    /**
+     * Lookup enum item by enum name
+     * @param name enum name
+     * @return item by enum name or throw error
+     * @throws enum item not found
+     */
     valueByName(name: string): T;
 
+    /**
+     * Lookup enum item by id or search by predicate
+     * @param idOrPredicate id or predicate
+     * @return item ot `null`
+     */
     find(idOrPredicate: string | number | SearchPredicate<T>): T | null;
 
+    /**
+     * Filter enum items by predicate
+     * @param predicate function to filtering
+     * @return items ot `[]`
+     */
     filter(predicate: SearchPredicate<T>): ReadonlyArray<T>;
 }
 
@@ -99,10 +127,18 @@ export class Enumerable implements EnumItemType {
 
     /**
      * Get all elements of enum
-     * @return {ReadonlyArray<T>} all elements of enum
+     * @return all elements of enum
      */
     static values(): ReadonlyArray<any> {
         return this.__store__.enumValues;
+    }
+
+    /**
+     * Get all enum names
+     * @return all enum names
+     */
+    static keys(): any[] {
+        return this.values().map(value => value.enumName);
     }
 
     /**
@@ -120,7 +156,7 @@ export class Enumerable implements EnumItemType {
 
     /**
      * Lookup enum item by enum name
-     * @param {string} name - enum name
+     * @param name enum name
      * @return item by enum name
      */
     static valueByName(name: string): any {

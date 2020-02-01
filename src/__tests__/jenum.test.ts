@@ -10,6 +10,14 @@ describe("EnumApi", () => {
         expect(states[2]).toBe(State.BLOCKED);
     });
 
+    test("keys", () => {
+        const enumNames = State.keys();
+        expect(enumNames.length).toBe(3);
+        expect(enumNames[0]).toBe("NEW");
+        expect(enumNames[1]).toBe("ACTIVE");
+        expect(enumNames[2]).toBe("BLOCKED");
+    });
+
     test("valueOf", () => {
         expect(State.valueOf("New")).toBe(State.NEW);
         expect(State.valueOf("Active")).toBe(State.ACTIVE);
@@ -30,14 +38,14 @@ describe("EnumApi", () => {
         expect(() => State.valueByName("Unknown")).toThrowError();
     });
 
-    test("findByValue", () => {
+    test("find$usingId", () => {
         expect(State.find("New")).toBe(State.NEW);
         expect(State.find("Active")).toBe(State.ACTIVE);
         expect(State.find("Blocked")).toBe(State.BLOCKED);
         expect(State.find("Unknown")).toBeNull();
     });
 
-    test("findByPredicate", () => {
+    test("find$usingPredicate", () => {
         expect(State.find(state => state.code === 1)).toBe(State.NEW);
         expect(State.find(state => state.code === 2)).toBe(State.ACTIVE);
         expect(State.find(state => state.code === 3)).toBe(State.BLOCKED);

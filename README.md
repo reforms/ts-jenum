@@ -1,7 +1,10 @@
 # ts-jenum
 TypeScript Enum like java.lang.Enum
 
-See example
+# Installation
+npm i ts-jenum
+
+# Example in TypeScript
 ```typescript
 import {Enum, EnumType} from "ts-jenum";
 
@@ -18,8 +21,8 @@ export class State extends EnumType<State>() {
 }
 
 // Usage example
-console.log("" + State.ACTIVE);        // Active
-console.log("" + State.BLOCKED);       // Blocked
+console.log("" + State.ACTIVE);        // "Active"
+console.log("" + State.BLOCKED);       // "Blocked"
 console.log(State.values());           // [State.NEW, State.ACTIVE, State.BLOCKED]
 console.log(State.valueOf("New"));     // State.NEW
 State.valueOf("Unknown")               // throw Error(...)
@@ -32,6 +35,10 @@ console.log(State.find(first));        // State.NEW
 console.log(State.find("Unknown"));    // null
 const last = state => state.code === 3;
 console.log(State.filter(last))        // [State.BLOCKED]
+console.log(State.keys())              // ["NEW", "ACTIVE", "BLOCKED"]
+
+// be "NEW" | "ACTIVE" | "BLOCKED"
+type StateNameUnion = EnumConstNames<typeof State>;
 
 ```
 
@@ -54,7 +61,7 @@ export class State extends EnumType<State>() {
 }
 // Get Enum Names
 // be "NEW" | "ACTIVE" | "BLOCKED"
-type StateNameUnion = EnumConstNames<typeof State, State>;
+type StateNameUnion = EnumConstNames<typeof State>;
 ```
 
 Powerful typing.
