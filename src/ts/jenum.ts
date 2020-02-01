@@ -81,7 +81,7 @@ export interface IStaticEnum<T> extends EnumClass {
      * Get all names of enum.
      * It's shortcut for 'values().map(value => value.enumName)'
      * @returns all names of enum */
-    keys(): T[];
+    keys(): string[];
 
     /**
      * Lookup enum item by id
@@ -137,7 +137,7 @@ export class Enumerable implements EnumItemType {
      * Get all enum names
      * @return all enum names
      */
-    static keys(): any[] {
+    static keys(): string[] {
         return this.values().map(value => value.enumName);
     }
 
