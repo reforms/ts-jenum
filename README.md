@@ -60,7 +60,7 @@ const Colors = {
 const keys = EnumTools.keys(Colors);
 
 // to be ["#FFFFFF", "#808080", "#000000"]
-const keys = EnumTools.values(Colors);
+const values = EnumTools.values(Colors);
 
 /**
  * to be {
