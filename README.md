@@ -1,10 +1,15 @@
 # ts-jenum
-TypeScript Enum like java.lang.Enum
+* TypeScript Enum like java.lang.Enum
+    * EnumType
+    * Enum
+* Powerful tool to comfortable work with plain json struct like enum 
+    * EnumTools
 
 # Installation
 npm i ts-jenum
 
 # Example in TypeScript
+## TypeScript Enum like java.lang.Enum
 ```typescript
 import {Enum, EnumType} from "ts-jenum";
 
@@ -39,6 +44,56 @@ console.log(State.keys())              // ["NEW", "ACTIVE", "BLOCKED"]
 
 // be "NEW" | "ACTIVE" | "BLOCKED"
 type StateNameUnion = EnumConstNames<typeof State>;
+
+```
+## EnumTools powerful tool to comfortable work with plain json struct like enum
+```typescript
+import {EnumTools} from "ts-jenum";
+// plain json like enum
+const Colors = {
+    WHITE: "#FFFFFF",
+    GRAY: "#808080",
+    BLACK: "#000000"
+};
+
+// to be ["WHITE", "GRAY", "BLACK"]
+const keys = EnumTools.keys(Colors);
+
+// to be ["#FFFFFF", "#808080", "#000000"]
+const keys = EnumTools.values(Colors);
+
+/**
+ * to be {
+ *    "#FFFFFF": "WHITE",
+ *    "#808080": "GRAY",
+ *    "#000000": "BLACK"
+ * };
+ */
+const rStruct = EnumTools.reverse(Colors);
+
+/**
+ * to be: [
+ *  {key: "WHITE", value: "#FFFFFF"},
+ *  {key: "GRAY", value: "#808080"},
+ *  {key: "BLACK", value: "#000000"}
+ * ]
+ */
+const pairs = EnumTools.pairs(Colors);
+
+/**
+ * To be class like:
+ * @Enum<ColorEnum>("key")
+ * class ColorEnum extends EnumType<ColorEnum>() {
+ *    static readonly WHITE = new ColorEnum("WHITE", "#FFFFFF");
+ *    static readonly GRAY = new ColorEnum("GRAY", "#808080");
+ *    static readonly BLACK = new ColorEnum("BLACK", "#000000");
+ *    private constructor(readonly key: string, readonly value: string | number) {
+ *        super();
+ *    }
+ * }
+ * ColorEnum has all IDE hint for developer, type checking and type safety
+ */
+const ColorEnum = EnumTools.toClass(Colors);
 
 ```
 

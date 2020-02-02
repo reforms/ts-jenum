@@ -1,6 +1,6 @@
 {
     "name": "ts-jenum",
-    "version": "2.1.2",
+    "version": "2.2.1",
     "description": "TypeScript Java Enum",
     "repository": {
         "type": "git",
@@ -29,7 +29,7 @@
         "build:es": "tsc --project tsconfig.json --pretty --noErrorTruncation --declaration false -m es6 --outDir dist/es",
         "build": "npm run clean:dist && run-p build:types build:es build:commonjs && npm run test",
         "pack": "run-p clean:pack build && npm pack",
-        "test": "jest -c jest.config.js",
+        "test": "jest -c jest.config.js --verbose",
         "dtslint": "run-s clean:dist build:types dtslint:v2_8_plus"
     },
     "author": {

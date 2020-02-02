@@ -46,15 +46,15 @@ export function Enum<T = any>(idPropertyName?: keyof T) {
 }
 
 /** Key->Value type */
-export type EnumMap = {[key: string]: Enumerable};
+type EnumMap = {[key: string]: Enumerable};
 
 /** Type for Meta-Data of Enum */
-export type EnumClass = {
+type EnumClass = {
     __store__: EnumStore
 };
 
 /** Store Type. Keep meta data for enum */
-export type EnumStore = {
+type EnumStore = {
     name: string,
     enumMap: EnumMap,
     enumMapByName: EnumMap,
@@ -63,7 +63,7 @@ export type EnumStore = {
 };
 
 /** Enum Item Type */
-export type EnumItemType = {
+type EnumItemType = {
     __enumName__: string;
 };
 
@@ -114,7 +114,7 @@ export interface IStaticEnum<T> extends EnumClass {
 }
 
 /** Base class for enum type */
-export class Enumerable implements EnumItemType {
+class Enumerable implements EnumItemType {
     // tslint:disable:variable-name
     // stub. need for type safety
     static readonly __store__ = {} as EnumStore;
@@ -213,3 +213,80 @@ type GetNames<FromType, KeepType = any, Include = true> = {
             never : Include extends true ? 
             never : K
 }[keyof FromType];
+
+/**
+ * Powerful tool to comfortable work with plain json struct like enum 
+ */
+export class EnumTools {
+
+    /**
+     * Get all properties key as string
+     * @param struct that to be scanned
+     * @returns all properties name as string
+     */
+    static keys<T>(struct: T): string[] {
+        return Object.keys(struct);
+    }
+
+    /**
+     * Get all values
+     * @param struct that to be scanned
+     * @returns all properties name as string
+     */
+    static values<T>(struct: T): Array<T[keyof T]> {
+        return Object.keys(struct).map(key => struct[key as keyof T]);
+    }
+
+    /**
+     * Reverse key and value
+     * @param struct that to be scanned
+     * @returns reversed struct
+     */
+    static reverse<T extends {[key: string]: string | number}>(struct: T): {[key: string]: string} {
+        const reversedStruct: {[key: string]: string} =  {};
+        for (const key in struct) {
+            reversedStruct[struct[key]] = key;
+        }
+        return reversedStruct;
+    }
+
+    /**
+     * Get array of pair with `{key: string, value: string | number}` struct
+     * @param struct that to be scanned
+     * @returns array of pair with `{key: string, value: string | number}` struct
+     */
+    static pairs<T extends {[key: string]: string | number}>(struct: T): Array<{key: string, value: string | number}> {
+        const pairs = [];
+        for (const key in struct) {
+            pairs.push({
+                key: key,
+                value: struct[key as keyof T]
+            });
+        }
+        return pairs;
+    }
+
+    /**
+     * Creating class that extends from EnumType and has all static functionality
+     * @param struct that to be scanned
+     * @returns class that extends from EnumType and has all static functionality
+     */
+    static toClass<T extends {[key: string]: string | number}>(struct: T) {
+        // declare class of enum
+        const KeyValueEnum = class InnerEnum extends EnumType<InnerEnum>() {
+            constructor(readonly key: string, readonly value: string | number) {
+                super();
+            }
+        }
+        // Dirty hack. Needs to be getting correct type of KeyValueEnum instance
+        const IgnoredEnum = new KeyValueEnum("", ""); 
+        // add static constant
+        for (const key of Object.keys(struct)) {
+            (<any> KeyValueEnum)[key] = new KeyValueEnum(key, struct[key as keyof T]);
+        }
+        // wrap by Enum decorator
+        const WrappedEnum = Enum("key")(KeyValueEnum);
+        // complete correct type
+        return <typeof WrappedEnum & Record<keyof T, typeof IgnoredEnum>> WrappedEnum;
+    }
+}
